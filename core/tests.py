@@ -108,6 +108,35 @@ class AvailabilityBookingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Court 10")
         self.assertNotContains(response, "Court 11")
+        self.assertContains(response, "Filter by surface")
+
+    def test_courts_page_without_filter_shows_all_available_surfaces(self):
+        response = self.client.get(reverse("courts"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Court 1")
+        self.assertContains(response, "Court 2")
+        self.assertContains(response, "Court 3")
+        self.assertContains(response, "Court 4")
+        self.assertContains(response, "Court 10")
+        self.assertContains(response, "Court 12")
+        self.assertNotContains(response, "Court 11")
+
+    def test_courts_page_surface_filter_shows_only_selected_surface(self):
+        response = self.client.get(reverse("courts"), {"surface": Court.Surface.CLAY})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Court 3")
+        self.assertNotContains(response, "Court 1")
+        self.assertNotContains(response, "Court 2")
+        self.assertNotContains(response, "Court 4")
+        self.assertNotContains(response, "Court 10")
+        self.assertNotContains(response, "Court 11")
+        self.assertNotContains(response, "Court 12")
+
+    def test_courts_page_surface_filter_with_no_available_matches_shows_message(self):
+        Court.objects.filter(surface=Court.Surface.GRASS).update(is_available=False)
+        response = self.client.get(reverse("courts"), {"surface": Court.Surface.GRASS})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No courts are currently available.")
 
     def test_cannot_book_unavailable_court(self):
         response = self.client.post(

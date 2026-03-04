@@ -22,10 +22,25 @@ def home(request):
 
 def courts(request):
     today = date.today()
-    courts_data = [
-        court for court in Court.objects.order_by("number") if court.is_available_on(today)
-    ]
-    return render(request, "core/courts.html", {"courts": courts_data})
+    selected_surface = request.GET.get("surface", "").strip().lower()
+    valid_surfaces = {choice[0] for choice in Court.Surface.choices}
+
+    courts_queryset = Court.objects.order_by("number")
+    if selected_surface in valid_surfaces:
+        courts_queryset = courts_queryset.filter(surface=selected_surface)
+    else:
+        selected_surface = ""
+
+    courts_data = [court for court in courts_queryset if court.is_available_on(today)]
+    return render(
+        request,
+        "core/courts.html",
+        {
+            "courts": courts_data,
+            "surface_choices": Court.Surface.choices,
+            "selected_surface": selected_surface,
+        },
+    )
 
 
 def book_court(request):

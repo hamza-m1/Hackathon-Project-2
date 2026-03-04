@@ -4,6 +4,20 @@
 
 {% block content %}
 <h1 class="mb-4">Available Courts</h1>
+<form method="get" class="row g-2 align-items-end mb-4">
+  <div class="col-sm-6 col-md-4">
+    <label for="surface" class="form-label">Filter by surface</label>
+    <select name="surface" id="surface" class="form-select" onchange="this.form.submit()">
+      <option value="">All surfaces</option>
+      {% for value, label in surface_choices %}
+        <option value="{{ value }}" {% if selected_surface == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-secondary">Apply</button>
+  </div>
+</form>
 <div class="row g-3">
   {% for court in courts %}
     <div class="col-sm-6 col-lg-3">
