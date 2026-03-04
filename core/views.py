@@ -1,6 +1,4 @@
 from datetime import date
-import django
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -78,22 +76,27 @@ def courts(request):
 
 @login_required
 def book_court(request):
+    initial_data = {
+        "court_number": request.GET.get("court_number"),
+        "date": request.GET.get("date"),
+        "start_time": request.GET.get("start_time"),
+    }
+
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = request.user
             booking.save()
-            messages.success(request, "Booking created successfully.")
+
+            confirmation_message = (
+                f"Booking confirmed for Court {booking.court_number} on "
+                f"{booking.date:%d %b %Y} at {booking.start_time:%H:%M}."
+            )
+            messages.success(request, confirmation_message)
             return redirect("my_bookings")
     else:
-        initial_data = {
-            "court_number": request.GET.get("court_number"),
-            "date": request.GET.get("date"),
-            "start_time": request.GET.get("start_time"),
-            }
-
-    form = BookingForm(initial=initial_data)
+        form = BookingForm(initial=initial_data)
 
     has_any_available_court = Court.objects.filter(is_available=True).exists()
     return render(
