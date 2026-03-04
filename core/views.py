@@ -22,17 +22,46 @@ def home(request):
 
 
 def courts(request):
-    today = date.today()
+    selected_date = request.GET.get("date")
+
+    if selected_date:
+        selected_date = date.fromisoformat(selected_date)
+    else:
+        selected_date = date.today()
+
     selected_surface = request.GET.get("surface", "").strip().lower()
     valid_surfaces = {choice[0] for choice in Court.Surface.choices}
 
     courts_queryset = Court.objects.order_by("number")
+
     if selected_surface in valid_surfaces:
         courts_queryset = courts_queryset.filter(surface=selected_surface)
     else:
         selected_surface = ""
 
-    courts_data = [court for court in courts_queryset if court.is_available_on(today)]
+    courts_data = [
+        court for court in courts_queryset
+        if court.is_available_on(selected_date)
+    ]
+
+    bookings = Booking.objects.filter(date=selected_date)
+
+    time_slots = [
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+    ]
+    
+    booked_slots = {
+        f"{booking.court_number}-{booking.start_time.strftime('%H:%M')}"
+        for booking in bookings
+        }
+
     return render(
         request,
         "core/courts.html",
@@ -40,6 +69,9 @@ def courts(request):
             "courts": courts_data,
             "surface_choices": Court.Surface.choices,
             "selected_surface": selected_surface,
+            "selected_date": selected_date,
+            "time_slots": time_slots,
+            "booked_slots": booked_slots,
         },
     )
 
@@ -55,7 +87,13 @@ def book_court(request):
             messages.success(request, "Booking created successfully.")
             return redirect("my_bookings")
     else:
-        form = BookingForm()
+        initial_data = {
+            "court_number": request.GET.get("court_number"),
+            "date": request.GET.get("date"),
+            "start_time": request.GET.get("start_time"),
+            }
+
+    form = BookingForm(initial=initial_data)
 
     has_any_available_court = Court.objects.filter(is_available=True).exists()
     return render(
@@ -81,3 +119,4 @@ def cancel_booking(request, booking_id):
     booking.delete()
     messages.success(request, "Booking cancelled successfully.")
     return redirect("my_bookings")
+
