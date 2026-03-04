@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from allauth.account.forms import SignupForm
+from allauth.account.forms import LoginForm, SignupForm
 
 from .models import Booking, Court
 
@@ -122,5 +122,20 @@ class BookingForm(forms.ModelForm):
 class CustomSignupForm(SignupForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({"class": "form-control"})
+        apply_bootstrap_field_classes(self)
+
+
+class CustomLoginForm(LoginForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_bootstrap_field_classes(self)
+
+
+def apply_bootstrap_field_classes(form):
+    for field in form.fields.values():
+        input_type = getattr(field.widget, "input_type", "")
+        base_class = (
+            "form-check-input" if input_type == "checkbox" else "form-control"
+        )
+        existing = field.widget.attrs.get("class", "")
+        field.widget.attrs["class"] = f"{existing} {base_class}".strip()

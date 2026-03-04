@@ -75,10 +75,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'core',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'core',
 ]
 
 MIDDLEWARE = [
@@ -199,4 +199,5 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 # Custom signup form
 ACCOUNT_FORMS = {
     "signup": "core.forms.CustomSignupForm",
+    "login": "core.forms.CustomLoginForm",
 }
