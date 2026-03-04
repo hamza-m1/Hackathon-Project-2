@@ -75,10 +75,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'core',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'core',
 ]
 
 MIDDLEWARE = [
@@ -183,6 +183,7 @@ AUTHENTICATION_BACKENDS = [
 
 # Account settings
 ACCOUNT_LOGIN_REDIRECT_URL = "my_bookings"
+LOGIN_REDIRECT_URL = "my_bookings"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
 
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
@@ -199,4 +200,5 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 # Custom signup form
 ACCOUNT_FORMS = {
     "signup": "core.forms.CustomSignupForm",
+    "login": "core.forms.CustomLoginForm",
 }

@@ -28,6 +28,36 @@ body.home-page {
     url("images/tennis_court.png") center/cover no-repeat;
   background-attachment: fixed;
 }
+
+body.auth-page {
+  background:
+    linear-gradient(rgba(16, 34, 29, 0.26), rgba(16, 34, 29, 0.26)),
+    url("images/tennis_court_login_sigup.png") center/cover no-repeat;
+  background-attachment: fixed;
+}
+
+body.auth-page .card {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--surface) 70%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+body.auth-page .card .form-control {
+  background-color: color-mix(in srgb, var(--surface) 94%, transparent);
+  border-color: color-mix(in srgb, var(--surface) 78%, var(--ink) 22%);
+  color: var(--ink);
+}
+
+body.auth-page .card .form-control:focus {
+  background-color: var(--surface);
+}
+
+body.auth-page .card .text-muted,
+body.auth-page .card .form-text {
+  color: color-mix(in srgb, var(--ink) 75%, var(--surface) 25%) !important;
+}
 /* Navigation Bar */
 .top-nav,
 .footer {
@@ -144,6 +174,22 @@ body.home-page {
   transform: translateY(-1px);
 }
 
+.btn-glow {
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.btn-glow:hover,
+.btn-glow:focus-visible {
+  border-color: var(--glow-border);
+  box-shadow:
+    var(--glow-ring),
+    0 0 20px var(--glow-aura-color);
+  transform: translateY(-1px);
+}
+
 .hero .btn-outline-light:hover {
   border-color: var(--glow-border);
   box-shadow:
@@ -165,6 +211,10 @@ textarea {
 /* Responsive Adjustments */
 @media (max-width: 991.98px) {
   body.home-page {
+    background-attachment: scroll;
+  }
+
+  body.auth-page {
     background-attachment: scroll;
   }
 }

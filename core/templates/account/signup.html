@@ -1,0 +1,61 @@
+{% extends "core/base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-4">
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-10 col-lg-7 col-xl-6">
+			<div class="card shadow-sm border-0">
+				<div class="card-body p-4 p-md-5">
+					<h1 class="h3 mb-2 text-center">Create Your Account</h1>
+					<p class="text-center text-muted mb-4">Sign up to start booking courts with SetPoint.</p>
+
+					<form method="post" action="{% url 'account_signup' %}" novalidate>
+						{% csrf_token %}
+
+						{% if form.non_field_errors %}
+							<div class="alert alert-danger py-2" role="alert">
+								{{ form.non_field_errors }}
+							</div>
+						{% endif %}
+
+						{% for field in form %}
+							{% if field.field.widget.input_type == "checkbox" %}
+								<div class="form-check mb-3">
+									{{ field }}
+									<label for="{{ field.id_for_label }}" class="form-check-label">{{ field.label }}</label>
+								</div>
+							{% else %}
+								<div class="mb-3">
+									<label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+									{{ field }}
+								</div>
+							{% endif %}
+
+							{% if field.help_text %}
+								<div class="form-text mt-1 mb-2">{{ field.help_text|safe }}</div>
+							{% endif %}
+							{% for error in field.errors %}
+								<div class="invalid-feedback d-block">{{ error }}</div>
+							{% endfor %}
+						{% endfor %}
+
+						{% if redirect_field_value %}
+							<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+						{% endif %}
+
+						<button type="submit" class="btn btn-success btn-glow w-100 py-2 mt-2">Create account</button>
+					</form>
+
+					<p class="text-center mt-4 mb-1">
+						Already have an account?
+						<a href="{% url 'account_login' %}" class="fw-semibold">Log in</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
