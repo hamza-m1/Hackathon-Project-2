@@ -22,8 +22,14 @@
         <ul class="navbar-nav ms-auto gap-lg-2">
           <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'courts' %}">Courts</a></li>
+          {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link" href="{% url 'book_court' %}">Book a Court</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'my_bookings' %}">My Bookings</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'account_logout' %}">Logout</a></li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'account_login' %}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a></li>
+          {% endif %}
         </ul>
       </div>
     </nav>
