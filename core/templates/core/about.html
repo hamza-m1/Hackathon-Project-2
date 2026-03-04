@@ -4,11 +4,13 @@
 {% block body_class %}about-page{% endblock %}
 
 {% block content %}
-<section class="hero p-4 p-md-5 rounded-4">
+<section class="p-4 p-md-5 rounded-4">
     <div class="row align-items-center g-4 justify-content-center">
         <div class="col-lg-9">
             <h1 class="display-6 fw-bold">{{ about.title }}</h1>
-            <p class="lead">{{ about.content|safe }}</p>
+            <div class="lead">
+                <p>{{ about.content|safe }}</p>
+            </div>
         </div>
         <div class="col-12 text-center mt-4">
             <a href="{% url 'book_court' %}" class="btn btn-accent btn-lg">Book Now</a>
