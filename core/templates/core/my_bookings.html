@@ -66,6 +66,7 @@
             <th>Time</th>
             <th>Court</th>
             <th>Surface</th>
+            <th>Price</th>
             <th>Payment</th>
             <th>Status</th>
             <th>Actions</th>
@@ -79,6 +80,7 @@
               <td>{{ booking.start_time|time:"H:i" }}</td>
               <td>{{ booking.court_number }}</td>
               <td>{{ booking.get_surface_display }}</td>
+              <td>{{ booking.slot_pricing.price_display }} <span class="badge {% if booking.slot_pricing.is_peak %}text-bg-warning{% else %}text-bg-success{% endif %}">{{ booking.slot_pricing.label }}</span></td>
               <td>
                 {% if booking.payment_status == "paid" %}
                   <span class="badge text-bg-primary">Paid</span>
@@ -128,7 +130,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="8" class="text-center py-4">No upcoming bookings.</td>
+              <td colspan="9" class="text-center py-4">No upcoming bookings.</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -149,6 +151,7 @@
             <th>Time</th>
             <th>Court</th>
             <th>Surface</th>
+            <th>Price</th>
             <th>Payment</th>
             <th>Status</th>
             <th>Actions</th>
@@ -162,6 +165,7 @@
               <td>{{ booking.start_time|time:"H:i" }}</td>
               <td>{{ booking.court_number }}</td>
               <td>{{ booking.get_surface_display }}</td>
+              <td>{{ booking.slot_pricing.price_display }} <span class="badge {% if booking.slot_pricing.is_peak %}text-bg-warning{% else %}text-bg-success{% endif %}">{{ booking.slot_pricing.label }}</span></td>
               <td>
                 {% if booking.payment_status == "paid" %}
                   <span class="badge text-bg-primary">Paid</span>
@@ -210,7 +214,7 @@
             </tr>
           {% empty %}
             <tr>
-              <td colspan="8" class="text-center py-4">No past bookings yet.</td>
+              <td colspan="9" class="text-center py-4">No past bookings yet.</td>
             </tr>
           {% endfor %}
         </tbody>

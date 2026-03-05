@@ -215,6 +215,31 @@ textarea {
   padding: 0.5rem 0.65rem;
 }
 
+.slot-badge {
+  min-height: 70px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.slot-badge-offpeak {
+  background-color: #198754;
+}
+
+.slot-badge-peak {
+  background-color: #fd7e14;
+}
+
+.price-legend-offpeak {
+  background-color: #198754;
+}
+
+.price-legend-peak {
+  background-color: #fd7e14;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 991.98px) {
   body.home-page {

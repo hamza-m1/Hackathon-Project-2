@@ -1,12 +1,14 @@
 from datetime import date, time
 
 from django.contrib import admin
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
 from .admin import BookingAdmin, CourtAdmin
 from .models import Booking, Court, SavedSlot
+from .pricing import get_slot_price_pence, get_slot_pricing, is_peak_slot
 
 
 class BookingAdminTests(TestCase):
@@ -441,3 +443,83 @@ class CancelBookingTests(TestCase):
 
         self.assertEqual(response.status_code, 405)
         self.assertTrue(Booking.objects.filter(pk=self.other_booking.pk).exists())
+
+
+class PricingDisplayTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.user = user_model.objects.create_user(
+            username="pricing-user",
+            email="pricing.user@example.com",
+            password="pricing-pass-123",
+        )
+        self.court = Court.objects.create(
+            number=99,
+            surface=Court.Surface.HARD,
+            is_available=True,
+        )
+
+    def test_peak_helper_marks_17_to_20_as_peak(self):
+        self.assertFalse(is_peak_slot("16:00"))
+        self.assertTrue(is_peak_slot("17:00"))
+        self.assertTrue(is_peak_slot("20:00"))
+        self.assertFalse(is_peak_slot("21:00"))
+
+    def test_peak_price_is_higher_than_off_peak_price(self):
+        self.assertGreater(get_slot_price_pence("17:00"), get_slot_price_pence("16:00"))
+
+    def test_courts_page_shows_price_and_peak_offpeak_policy(self):
+        response = self.client.get(reverse("courts"))
+        off_peak_price = get_slot_pricing("09:00", settings.STRIPE_CURRENCY)["price_display"]
+        peak_price = get_slot_pricing("17:00", settings.STRIPE_CURRENCY)["price_display"]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Peak and Off-peak Pricing Policy")
+        self.assertContains(response, "Off-peak")
+        self.assertContains(response, "Peak")
+        self.assertContains(response, off_peak_price)
+        self.assertContains(response, peak_price)
+
+    def test_payment_success_shows_price_summary(self):
+        booking = Booking.objects.create(
+            player_name="Price Test",
+            player_email="price.test@example.com",
+            date=date(2026, 3, 23),
+            start_time=time(17, 0),
+            court_number=self.court.number,
+            surface=self.court.surface,
+            owner=self.user,
+            payment_status=Booking.PaymentStatus.PAID,
+            stripe_checkout_session_id="cs_test_123",
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            f"{reverse('payment_success')}?session_id={booking.stripe_checkout_session_id}"
+        )
+        expected_price = get_slot_pricing(
+            booking.start_time, settings.STRIPE_CURRENCY
+        )["price_display"]
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Price paid")
+        self.assertContains(response, expected_price)
+
+    def test_my_bookings_shows_price_column(self):
+        Booking.objects.create(
+            player_name="List Price",
+            player_email="list.price@example.com",
+            date=date(2026, 3, 24),
+            start_time=time(9, 0),
+            court_number=self.court.number,
+            surface=self.court.surface,
+            owner=self.user,
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("my_bookings"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Price")
+        self.assertContains(
+            response,
+            get_slot_pricing("09:00", settings.STRIPE_CURRENCY)["price_display"],
+        )

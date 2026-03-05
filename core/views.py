@@ -1,5 +1,5 @@
 import stripe
-from datetime import date
+from datetime import date, time
 from django import forms as django_forms
 from django.conf import settings
 from django.contrib import messages
@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .forms import BookingForm, ContactRequestForm
 from .models import Booking, Court, SavedSlot, About
+from .pricing import get_slot_price_pence, get_slot_pricing
 
 
 def _create_checkout_session(request, booking):
@@ -29,6 +30,7 @@ def _create_checkout_session(request, booking):
     success_url = request.build_absolute_uri(reverse("payment_success"))
     cancel_url = request.build_absolute_uri(reverse("payment_cancel"))
 
+    slot_price_pence = get_slot_price_pence(booking.start_time)
     session = stripe.checkout.Session.create(
         mode="payment",
         payment_method_types=["card"],
@@ -42,12 +44,13 @@ def _create_checkout_session(request, booking):
                 "quantity": 1,
                 "price_data": {
                     "currency": settings.STRIPE_CURRENCY,
-                    "unit_amount": settings.STRIPE_BOOKING_PRICE_PENCE,
+                    "unit_amount": slot_price_pence,
                     "product_data": {
                         "name": f"Court {booking.court_number} booking",
                         "description": (
                             f"{booking.date:%d %b %Y} at "
-                            f"{booking.start_time:%H:%M}"
+                            f"{booking.start_time:%H:%M} "
+                            f"({get_slot_pricing(booking.start_time, settings.STRIPE_CURRENCY)['label']})"
                         ),
                     },
                 },
@@ -143,7 +146,8 @@ def courts(request):
 
     bookings = Booking.objects.filter(date=selected_date)
 
-    time_slots = [
+    time_slots = []
+    for slot in [
         "09:00",
         "10:00",
         "11:00",
@@ -152,7 +156,20 @@ def courts(request):
         "14:00",
         "15:00",
         "16:00",
-    ]
+        "17:00",
+        "18:00",
+        "19:00",
+        "20:00",
+    ]:
+        slot_pricing = get_slot_pricing(slot, settings.STRIPE_CURRENCY)
+        time_slots.append(
+            {
+                "value": slot,
+                "price_display": slot_pricing["price_display"],
+                "is_peak": slot_pricing["is_peak"],
+                "label": slot_pricing["label"],
+            }
+        )
     
     booked_slots = {
         f"{booking.court_number}-{booking.start_time.strftime('%H:%M')}"
@@ -169,6 +186,12 @@ def courts(request):
             "selected_date": selected_date,
             "time_slots": time_slots,
             "booked_slots": booked_slots,
+            "off_peak_price_display": get_slot_pricing(
+                time(9, 0), settings.STRIPE_CURRENCY
+            )["price_display"],
+            "peak_price_display": get_slot_pricing(
+                time(17, 0), settings.STRIPE_CURRENCY
+            )["price_display"],
         },
     )
 
@@ -225,6 +248,17 @@ def book_court(request):
             saved_prefill["slot_id"] = existing_saved_slot.id if existing_saved_slot else None
 
     has_any_available_court = Court.objects.filter(is_available=True).exists()
+    selected_slot_pricing = None
+    selected_time = form.initial.get("start_time") or form.data.get("start_time")
+    if selected_time:
+        try:
+            selected_slot_pricing = get_slot_pricing(
+                selected_time,
+                settings.STRIPE_CURRENCY,
+            )
+        except (TypeError, ValueError):
+            selected_slot_pricing = None
+
     return render(
         request,
         "core/book_court.html",
@@ -233,6 +267,13 @@ def book_court(request):
             "has_any_available_court": has_any_available_court,
             "saved_prefill": saved_prefill,
             "is_edit_mode": False,
+            "selected_slot_pricing": selected_slot_pricing,
+            "off_peak_price_display": get_slot_pricing(
+                time(9, 0), settings.STRIPE_CURRENCY
+            )["price_display"],
+            "peak_price_display": get_slot_pricing(
+                time(17, 0), settings.STRIPE_CURRENCY
+            )["price_display"],
         },
     )
 
@@ -337,6 +378,9 @@ def my_bookings(request):
         )
         booking.saved_slot_id = saved_slot_lookup.get(slot_key)
         booking.is_saved_slot = bool(booking.saved_slot_id)
+        booking.slot_pricing = get_slot_pricing(
+            booking.start_time, settings.STRIPE_CURRENCY
+        )
 
     court_map = {court.number: court for court in Court.objects.all()}
     occupied_saved_slot_keys = set(
@@ -492,16 +536,22 @@ def contact_support(request):
 def payment_success(request):
     session_id = request.GET.get("session_id", "")
     booking = None
+    booking_slot_pricing = None
     if session_id:
         booking = Booking.objects.filter(
             owner=request.user,
             stripe_checkout_session_id=session_id,
         ).first()
+        if booking:
+            booking_slot_pricing = get_slot_pricing(
+                booking.start_time, settings.STRIPE_CURRENCY
+            )
     return render(
         request,
         "core/payment_success.html",
         {
             "booking": booking,
+            "booking_slot_pricing": booking_slot_pricing,
         },
     )
 

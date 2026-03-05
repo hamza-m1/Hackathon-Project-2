@@ -29,6 +29,16 @@
     {% endif %}
   </div>
 {% endif %}
+<div class="alert alert-info">
+  Off-peak (09:00-16:00): <strong>{{ off_peak_price_display }}</strong> |
+  Peak (17:00-20:00): <strong>{{ peak_price_display }}</strong>
+</div>
+{% if selected_slot_pricing %}
+  <div class="alert {% if selected_slot_pricing.is_peak %}alert-warning{% else %}alert-success{% endif %}">
+    Selected slot pricing: <strong>{{ selected_slot_pricing.label }}</strong> at
+    <strong>{{ selected_slot_pricing.price_display }}</strong>.
+  </div>
+{% endif %}
 <div class="card card-soft">
   <div class="card-body p-4">
     <form method="post" class="row g-3">

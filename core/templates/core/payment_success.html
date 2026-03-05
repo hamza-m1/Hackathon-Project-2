@@ -14,6 +14,13 @@
         Your booking will be confirmed once it is processed.
       {% endif %}
     </p>
+    {% if booking and booking_slot_pricing %}
+      <div class="alert alert-light border">
+        <p class="mb-1"><strong>Booking summary</strong></p>
+        <p class="mb-1">Court {{ booking.court_number }} on {{ booking.date }} at {{ booking.start_time|time:"H:i" }}</p>
+        <p class="mb-0">Price paid: <strong>{{ booking_slot_pricing.price_display }}</strong> ({{ booking_slot_pricing.label }})</p>
+      </div>
+    {% endif %}
     <a href="{% url 'my_bookings' %}" class="btn btn-accent">Go to My Bookings</a>
   </div>
 </div>
