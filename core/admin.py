@@ -6,8 +6,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.utils import timezone
+from django_summernote.admin import SummernoteModelAdmin
 
-from .models import Booking, ContactRequest, Court, SavedSlot
+
+from .models import Booking, ContactRequest, Court, SavedSlot, About
 
 
 logger = logging.getLogger(__name__)
@@ -212,3 +214,11 @@ class ContactRequestAdmin(admin.ModelAdmin):
         "message",
     )
     ordering = ("-created_at",)
+
+
+@admin.register(About)
+class AboutAdmin(SummernoteModelAdmin):
+    list_display = ("title", "last_updated")
+    search_fields = ("title",)
+    ordering = ("-last_updated",)
+    summernote_fields = ("content",)
