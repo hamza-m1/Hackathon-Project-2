@@ -443,10 +443,10 @@ All AI-generated suggestions were reviewed, edited, and validated by the develop
 - Heroku (deployment platform)
 - CI Database Maker (PostgreSQL provisioning)
 - Lucidchart (database diagrams)
-- Balsamiq (wireframes)
+- Edraw for linux (wireframes)
 - GitHub Copilot (development assistance)
 - ChatGPT (ideation, debugging support, and documentation wording)
 - Tinyfy (image optimisation/compression)
-- PowerMapper (check browser compatibility)
-- Discord (communication between team members)
+- PowerMapper (check browser compatibility testing)
+- Discord (team communication)
 - Team contributors and reviewers
