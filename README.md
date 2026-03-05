@@ -87,11 +87,30 @@ The app supports the full booking lifecycle:
 
 ### User Stories
 
-Write your user stories in this section.
+For detailed User Stories, including acceptance criteria and task breakdowns, please see the [SetPoint Project Board](https://github.com/users/steff657/projects/8)
+
+**Story Titles:**
+
+- Player wants to create an account so that they can book courts and manage reservations.
+- Player wants secure login so that bookings are protected.
+- Player wants to filter courts by surface type so that choose their preference.
+- Player wants see peak/off-peak pricing so that they understand the benefits & differences between the price points.
+- Player wants to edit their own bookings so that to change the date/time without cancellation and re-booking.
+- Player wants to view court availability so that they can choose a suitable slot.
+- Player wants reminder notifications so that they remember the booking.
+- Player wants to book a court so that they can reserve a time to play.
+- Player wants to pay for bookings so that reservation can be confirmed conveniently.
+- Player wants booking confirmation so that they know their reservation is secure.
+- Admin wants to issue refunds for cancellations so that customers are treated fairly and refunded with minimal hassle.
+- Player wants to cancel a booking so that they can free up the slot.
+- Admin wants to view all bookings so that they can manage court usage efficiently.
+- Admin wants to manage court availability so that they can open/close courts for maintenance/events.
+- Player wants to view their past bookings so that they can easily rebook frequent times/courts.
+- Visitor wants an About page so that they can trust and understand the organisation.
+- Player wants to save courts or timeslots so that they can easily and quickly book favourite days/times/courts.
+- Player wants find partners so that they can play with someone of similar level.
 
 ### Wireframes
-
-Attach wireframes in this section.
 
 ### Agile Methodology
 
