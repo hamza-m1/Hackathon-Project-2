@@ -300,7 +300,24 @@ Screenshots of the responsiveness, pick a few devices.
 
 ### Code Validation
 
-Validate your code (HTML, CSS, JS, and Python) for all pages/files and display screenshots.
+#### HTML Validation
+
+All pages were validated as a guest and logged-in user using the [W3C HTML Validator](https://validator.w3.org/).
+
+| Page                                  | Result    |
+| ------------------------------------- | --------- |
+| Home (`/`)                            | No errors |
+| Courts (`/courts/`)                   | No errors |
+| Book Court (`/book/<id>/`)            | No errors |
+| My Bookings (`/my-bookings/`)         | No errors |
+| About (`/about/`)                     | No errors |
+| Contact Support (`/contact-support/`) | No errors |
+| Login (`/accounts/login/`)            | No errors |
+| Signup (`/accounts/signup/`)          | No errors |
+
+Screenshot of validation results:
+
+![HTML validation](testing/html_validation.png)
 
 ### Manual Testing user stories
 
