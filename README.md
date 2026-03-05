@@ -2,7 +2,7 @@
 
 SetPoint is a full-stack Django web application that allows users to book tennis courts online. The platform includes user authentication, real-time court availability, booking management, and Stripe payment integration.
 
-![SetPoint Logo](core\static\core\images\SetPoint_logo.png)
+![SetPoint Logo](core/static/core/images/SetPoint_logo.png)
 
 ## Repository Links
 
